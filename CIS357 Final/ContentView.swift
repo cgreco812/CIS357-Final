@@ -4,25 +4,37 @@
 //
 //  Created by user940079 on 3/31/25.
 //
-
 import SwiftUI
 import CoreML
-
 struct ContentView: View {
     @State var erasing = false
-    @State var pixels: [Double] = Array(repeating:1, count: 28*28)
+    @State var pixels: [Double] = Array(repeating:255, count: 28*28)
     @State var guess: Int64 = 0
+    @State var displayImage = false
+    @State var pixel: CVPixelBuffer?
     
     var body: some View {
         VStack {
+            if (displayImage){
+                if let buffer = pixel{
+                    if let cgImage = buffer.toCGImage() {
+                        Image(decorative: cgImage, scale: 1.0)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Text("Failed to create image from pixel buffer")
+                    }
+                }
+            }
             DrawingArea(erasing: $erasing, pixels: $pixels)
+                .border(Color.black)
             HStack{
                 Button("Guess"){
                     guess = predictNumber(pixels: pixels)
                 }
                 Button(action: {
                     for index in 0..<pixels.count {
-                        pixels[index] = 1
+                        pixels[index] = 255
                     }
                 }){
                     Image(systemName: "trash")
@@ -37,11 +49,18 @@ struct ContentView: View {
             print("Failed to create image from drawing")
             return -1
         }
+        pixel = cgImage
+        displayImage = true
         let model = try? MNISTClassifier(configuration: .init())
         
         do {
             let prediction = try model?.prediction(image: cgImage)
             
+            if let classes = prediction?.labelProbabilities{
+                for (num, confidence) in classes{
+                    print("Number: \(num) : \(confidence)")
+                }
+            }
             guard let guess = prediction?.classLabel else{
                 return -1
             }
@@ -91,7 +110,8 @@ struct ContentView: View {
                 let index = y * width + x
                 // Convert 1.0 (white) to 0 and 0.0 (black) to 255
                 // MNIST expects white digits on black background
-                let pixelValue = UInt8(255.0 * (1.0 - pixelArray[index]))
+                let pixelValue = UInt8(pixelArray[index])
+                //print(pixelValue)
                 bufferPtr[y * bytesPerRow + x] = pixelValue
             }
         }
@@ -102,7 +122,8 @@ struct ContentView: View {
         return buffer
     }
 }
-
 #Preview {
     ContentView()
 }
+
+
