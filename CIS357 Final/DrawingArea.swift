@@ -4,9 +4,7 @@
 //
 //  Created by user940079 on 3/31/25.
 //
-
 import SwiftUI
-
 struct DrawingArea: View {
     @Binding var erasing : Bool
     @Binding var pixels: [Double]
@@ -20,7 +18,7 @@ struct DrawingArea: View {
             .onChanged{ value in
                 if let match = self.frames.firstIndex(where: {$0.contains((value.location))}) {
                     if erasing {
-                        pixels[match] = 1
+                        pixels[match] = 255
                     }else{
                         pixels[match] = 0
                     }
@@ -43,5 +41,10 @@ struct DrawingArea: View {
             }
         }
         .gesture(swipeGesture)
+        .aspectRatio(1, contentMode: .fit)
+        .frame(maxWidth: .infinity, alignment: .center)
+        
     }
 }
+
+
