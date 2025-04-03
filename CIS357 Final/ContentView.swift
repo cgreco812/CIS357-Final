@@ -12,26 +12,48 @@ struct ContentView: View {
     @State var guess: Int64 = 0
     @State var displayImage = false
     @State var pixel: CVPixelBuffer?
+    @State var targetNumber: Int = 0
+    @State var showingAlert = false
+    @State var highScore:Double = 0.0
+    @State var score:Double = 0.0
     
     var body: some View {
         VStack {
-            if (displayImage){
-                if let buffer = pixel{
-                    if let cgImage = buffer.toCGImage() {
-                        Image(decorative: cgImage, scale: 1.0)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } else {
-                        Text("Failed to create image from pixel buffer")
-                    }
-                }
-            }
+//            if (displayImage){
+//                if let buffer = pixel{
+//                    if let cgImage = buffer.toCGImage() {
+//                        Image(decorative: cgImage, scale: 1.0)
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                    } else {
+//                        Text("Failed to create image from pixel buffer")
+//                    }
+//                }
+//            }
+            Text("Draw a perfect \(targetNumber)")
+                .font(.subheadline)
+                .fontWeight(.bold)
             DrawingArea(erasing: $erasing, pixels: $pixels)
                 .border(Color.black)
             HStack{
+                Button(action:{
+                    erasing.toggle()
+                }){
+                    if(erasing){
+                        Image(systemName: "eraser.fill")
+                    }else{
+                        Image(systemName: "eraser")
+                    }
+                }
+                
+                Spacer()
+                
                 Button("Guess"){
                     guess = predictNumber(pixels: pixels)
+                    showingAlert = true
                 }
+                Spacer()
+                
                 Button(action: {
                     for index in 0..<pixels.count {
                         pixels[index] = 255
@@ -39,10 +61,22 @@ struct ContentView: View {
                 }){
                     Image(systemName: "trash")
                 }
-                Text("Guess is: \(guess)")
             }
+            Text("Guess is: \(guess)")
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .onAppear(){
+            targetNumber = generateNumber()
         }
         .padding()
+        .alert("You scored: \(score)",isPresented: $showingAlert){
+            Button(action: {targetNumber = generateNumber()}){
+                Text("OK")
+            }
+        }
+    }
+    private func generateNumber() -> Int {
+        return Int.random(in: 0..<10)
     }
     private func predictNumber(pixels: [Double]) -> Int64{
         guard let cgImage = createMNISTImage(from: pixels)else{
@@ -59,6 +93,10 @@ struct ContentView: View {
             if let classes = prediction?.labelProbabilities{
                 for (num, confidence) in classes{
                     print("Number: \(num) : \(confidence)")
+                }
+                let decimalScore = classes[Int64(targetNumber)]
+                if(decimalScore != nil){
+                    score = decimalScore! * 100
                 }
             }
             guard let guess = prediction?.classLabel else{
@@ -110,7 +148,13 @@ struct ContentView: View {
                 let index = y * width + x
                 // Convert 1.0 (white) to 0 and 0.0 (black) to 255
                 // MNIST expects white digits on black background
-                let pixelValue = UInt8(pixelArray[index])
+                var pix = pixelArray[index]
+                if(pix == 0){
+                    pix = 255
+                }else{
+                    pix = 0
+                }
+                let pixelValue = UInt8(pix)
                 //print(pixelValue)
                 bufferPtr[y * bytesPerRow + x] = pixelValue
             }
