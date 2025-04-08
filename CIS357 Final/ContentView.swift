@@ -55,9 +55,7 @@ struct ContentView: View {
                 Spacer()
                 
                 Button(action: {
-                    for index in 0..<pixels.count {
-                        pixels[index] = 255
-                    }
+                    clear()
                 }){
                     Image(systemName: "trash")
                 }
@@ -70,9 +68,14 @@ struct ContentView: View {
         }
         .padding()
         .alert("You scored: \(score)",isPresented: $showingAlert){
-            Button(action: {targetNumber = generateNumber()}){
+            Button(action: {targetNumber = generateNumber(); clear()}){
                 Text("OK")
             }
+        }
+    }
+    private func clear(){
+        for index in 0..<pixels.count {
+            pixels[index] = 255
         }
     }
     private func generateNumber() -> Int {

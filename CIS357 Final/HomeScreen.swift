@@ -8,28 +8,39 @@
 import SwiftUI
 
 struct HomeScreen: View {
+    @State var showContentView = false
     var body: some View {
         NavigationView{
             
             ZStack {
                 Color.blue.opacity(0.8)
                 VStack{
-                    NavigationLink(destination: ContentView()){
+                   // NavigationLink(destination: ContentView()){
+                    Button(action: {
+                        showContentView = true
+                    }) {
                         Image(systemName: "play.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                        .foregroundColor(.black)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(.black)
                     }
+                    .padding(.bottom, 2.0)
+                    
                     Text("Tap to play")
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundColor(Color.white)
                         .padding(.top)
-                        .navigationTitle("Number Drawer")
+                    }
+                
+                        
 
-                }
-            }.ignoresSafeArea()
+               // }
+                //.navigationTitle("Number Drawer")
+            }.ignoresSafeArea().fullScreenCover(isPresented: $showContentView) {
+                ContentView()
+            }
         }
         
     }
