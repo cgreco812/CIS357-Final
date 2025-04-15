@@ -8,48 +8,45 @@
 import SwiftUI
 
 struct HomeScreen: View {
+    @State var showContentView = false
     var body: some View {
-        NavigationStack {
             ZStack {
-                // Blue background
-                Color.blue.opacity(0.8).ignoresSafeArea()
-                
+                Color.blue.opacity(0.8)
                 VStack(spacing: 35) {
-                    // Welcome title
-                    VStack {
-                        Text("Welcome to")
-                            .font(.title)
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                        
-                        Text("NUMBER DRAWER")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
+                   // Welcome title
+                   VStack {
+                       Text("Welcome to")
+                           .font(.title)
+                           .fontWeight(.medium)
+                           .foregroundColor(.black)
+                       
+                       Text("NUMBER DRAWER")
+                           .font(.largeTitle)
+                           .fontWeight(.bold)
+                           .foregroundColor(.black)
+                   }
+                    
+                    Button(action: {
+                        showContentView = true
+                    }) {
+                        Image(systemName: "play.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
                             .foregroundColor(.black)
                     }
                     
-                    // Play button with navigation
-                    NavigationLink(destination: ContentView()) {
-                        VStack {
-                            Image(systemName: "play.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 80, height: 80)
-                                .foregroundColor(.white)
-                            
-                            Text("Tap to play")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .padding(.top, 8)
-                        }
+                    Text("Tap to play")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.white)
+                        .padding(.top)
                     }
-                }
-                .padding(.bottom, 60) // Push content up slightly
+                
+            }.ignoresSafeArea()
+            .fullScreenCover(isPresented: $showContentView) {
+                ContentView(showContentView: $showContentView)
             }
-            .navigationTitle("Number Drawer")
-            .navigationBarHidden(true) // Hide navigation bar for cleaner home screen
-        }
     }
 }
 
