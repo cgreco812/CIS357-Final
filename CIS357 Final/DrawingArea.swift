@@ -42,6 +42,8 @@ struct DrawingArea: View {
         }
         .gesture(swipeGesture)
         .aspectRatio(1, contentMode: .fit)
+        .border(Color.black, width: 5)
+        .cornerRadius(10)
         .frame(maxWidth: .infinity, alignment: .center)
         
     }

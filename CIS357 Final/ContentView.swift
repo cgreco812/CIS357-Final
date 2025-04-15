@@ -18,33 +18,32 @@ struct ContentView: View {
                 .font(.subheadline)
                 .fontWeight(.bold)
             DrawingArea(erasing: $erasing, pixels: $pixels)
-                .border(Color.black)
             HStack{
-                Button(action:{
-                    erasing.toggle()
-                }){
-                    if(erasing){
-                        Image(systemName: "eraser.fill")
-                    }else{
-                        Image(systemName: "eraser")
+                    Button(action:{
+                        erasing.toggle()
+                    }){
+                        if(erasing){
+                            Image(systemName: "eraser.fill")
+                        }else{
+                            Image(systemName: "eraser")
+                        }
                     }
-                }
-                
-                Spacer()
-                
-                Button("Attempt"){
-                    guess = predictNumber(pixels: pixels)
-                    showingAlert = true
-                }
-                Spacer()
-                
-                Button(action: {
-                    clear()
-                }){
-                    Image(systemName: "trash")
-                }
+                    .padding(.leading, 0.0)
+                    
+                    Spacer()
+                    
+                    Button("Attempt"){
+                        guess = predictNumber(pixels: pixels)
+                        showingAlert = true
+                    }
+                    Spacer()
+                    
+                    Button(action: {
+                        clear()
+                    }){
+                        Image(systemName: "trash")
+                    }
             }
-           
             Spacer()
             Button(action: {
                 showContentView = false
@@ -57,7 +56,7 @@ struct ContentView: View {
             targetNumber = generateNumber()
         }
         .padding()
-        .alert("You scored: \(score)",isPresented: $showingAlert){
+        .alert("You scored: \(score)%",isPresented: $showingAlert){
             Button(action: {targetNumber = generateNumber(); clear()}){
                 Text("OK")
             }
@@ -160,5 +159,6 @@ struct ContentView: View {
     }
 }
 #Preview {
-    //ContentView()
+    @Previewable @State var showing = true
+    ContentView(showContentView: $showing)
 }
