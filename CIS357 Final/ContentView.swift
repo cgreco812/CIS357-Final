@@ -3,12 +3,8 @@ import CoreML
 struct ContentView: View {
     @State var erasing = false
     @State var pixels: [Double] = Array(repeating:255, count: 28*28)
-    @State var guess: Int64 = 0
-    @State var displayImage = false
-    @State var pixel: CVPixelBuffer?
     @State var targetNumber: Int = 0
     @State var showingAlert = false
-    @State var highScore:Double = 0.0
     @State var score:Double = 0.0
     @Binding var showContentView: Bool
     
@@ -33,8 +29,8 @@ struct ContentView: View {
                     Spacer()
                     
                     Button("Attempt"){
-                        guess = predictNumber(pixels: pixels)
                         showingAlert = true
+                        _ = predictNumber(pixels: pixels)
                     }
                     Spacer()
                     
@@ -71,23 +67,20 @@ struct ContentView: View {
         return Int.random(in: 0..<10)
     }
     private func predictNumber(pixels: [Double]) -> Int64{
-        guard let cgImage = createMNISTImage(from: pixels)else{
+        guard let buffer = createMNISTImage(from: pixels)else{
             print("Failed to create image from drawing")
             return -1
         }
-        pixel = cgImage
-        displayImage = true
         let model = try? MNISTClassifier(configuration: .init())
         
         do {
-            let prediction = try model?.prediction(image: cgImage)
+            let prediction = try model?.prediction(image: buffer)
             
             if let classes = prediction?.labelProbabilities{
-                for (num, confidence) in classes{
-                    print("Number: \(num) : \(confidence)")
-                }
+                print("Hello")
                 let decimalScore = classes[Int64(targetNumber)]
                 if(decimalScore != nil){
+                    print("Hi")
                     score = decimalScore! * 100
                 }
             }
