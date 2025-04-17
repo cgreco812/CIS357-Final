@@ -77,10 +77,8 @@ struct ContentView: View {
             let prediction = try model?.prediction(image: buffer)
             
             if let classes = prediction?.labelProbabilities{
-                print("Hello")
                 let decimalScore = classes[Int64(targetNumber)]
                 if(decimalScore != nil){
-                    print("Hi")
                     score = decimalScore! * 100
                 }
             }
@@ -131,7 +129,7 @@ struct ContentView: View {
         for y in 0..<height {
             for x in 0..<width {
                 let index = y * width + x
-                // Convert 1.0 (white) to 0 and 0.0 (black) to 255
+                // Convert 255 (white) to 0 and 0 (black) to 255
                 // MNIST expects white digits on black background
                 var pix = pixelArray[index]
                 if(pix == 0){
@@ -140,7 +138,6 @@ struct ContentView: View {
                     pix = 0
                 }
                 let pixelValue = UInt8(pix)
-                //print(pixelValue)
                 bufferPtr[y * bytesPerRow + x] = pixelValue
             }
         }
